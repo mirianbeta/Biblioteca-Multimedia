@@ -10,7 +10,7 @@
             "request": "launch",
             "mainClass": "MediaPlayer",
             "projectName": "Biblioteca Multimedia_a04b19cd",
-            "vmArgs": "--module-path \"C:/Users/Mirian/Desktop/DI/openjfx-21.0.1_windows-x64_bin-sdk/javafx-sdk-21.0.1/lib\" --add-modules javafx.controls,javafx.fxml"
+            "vmArgs": "--module-path \"C:/Users/Mirian/Desktop/DI/openjfx-21.0.1_windows-x64_bin-sdk/javafx-sdk-21.0.1/lib\" --add-modules javafx.controls,javafx.fxml -cp \"lib/ikonli-core-12.3.1.jar;lib/ikonli-fontawesome5-pack-12.3.1.jar;lib/ikonli-javafx-12.3.1.jar\""
         },
         {
             "type": "java",

@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BibliotecaController">
    <children>
-      <Pane prefHeight="30.0" prefWidth="600.0" AnchorPane.topAnchor="0.0">
+      <HBox prefHeight="332.0" prefWidth="600.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <MenuBar layoutY="1.0" prefHeight="30.0" prefWidth="600.0">
+            <MenuBar prefHeight="30.0" prefWidth="600.0" HBox.hgrow="ALWAYS">
               <menus>
                 <Menu mnemonicParsing="false" text="Archivo">
                   <items>
@@ -40,71 +44,137 @@
               </menus>
             </MenuBar>
          </children>
-      </Pane>
-      <Pane layoutX="90.0" layoutY="28.0" prefHeight="300.0" prefWidth="600.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
-      <Pane layoutY="340.0" prefHeight="70.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0">
+      </HBox>
+      <Pane layoutX="90.0" layoutY="28.0" prefHeight="298.0" prefWidth="600.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+      <VBox layoutX="440.0" layoutY="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
          <children>
-            <Button layoutX="283.0" layoutY="18.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0">
-               <graphic>
-                  <FontAwesomeIconView glyphName="PLAY_CIRCLE" size="25" />
+            <Pane fx:id="pestañaBiblioteca" prefHeight="372.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Text fill="#535353" layoutX="57.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Biblioteca" textAlignment="CENTER" wrappingWidth="65.8465576171875">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <Button fx:id="btnCloseBiblioteca" layoutX="14.0" layoutY="7.0" mnemonicParsing="false" onAction="#cerrarBiblioteca" prefHeight="15.0" prefWidth="15.0">
+                     <graphic>
                </graphic>
-            </Button>
-            <Button layoutX="249.0" layoutY="20.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
-               <graphic>
-                  <FontAwesomeIconView glyphName="STOP_CIRCLE" size="20" />
-               </graphic>
-            </Button>
-            <Button layoutX="320.0" layoutY="20.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
-               <graphic>
-                  <FontAwesomeIconView glyphName="PAUSE_CIRCLE" size="20" />
-               </graphic>
-            </Button>
-            <Slider layoutX="17.0" prefHeight="14.0" prefWidth="566.0" />
-            <Button layoutX="222.0" layoutY="24.0" mnemonicParsing="false">
-               <graphic>
-                  <FontAwesomeIconView glyphName="SLIDERS" />
-               </graphic>
-            </Button>
-            <Button layoutX="353.0" layoutY="23.0" mnemonicParsing="false">
-               <graphic>
-                  <FontAwesomeIconView glyphName="FOLDER_OPEN" />
-               </graphic>
-            </Button>
-         </children></Pane>
-      <Pane layoutX="440.0" layoutY="30.0" prefHeight="372.0" prefWidth="160.0" AnchorPane.rightAnchor="0.0" />
-      <Pane layoutY="30.0" prefHeight="372.0" prefWidth="118.0" AnchorPane.leftAnchor="0.0">
-         <children>
-            <FontAwesomeIconView glyphName="HOURGLASS_2" layoutX="14.0" layoutY="66.0" />
-            <Text layoutX="32.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Velocidad de reproducción" wrappingWidth="65.8465576171875">
-               <font>
-                  <Font size="10.0" />
-               </font>
-            </Text>
-            <Button layoutX="19.0" layoutY="79.0" mnemonicParsing="false" text="x 0.5" />
-            <Button layoutX="65.0" layoutY="79.0" mnemonicParsing="false" text="x 1.0" />
-            <Button layoutX="19.0" layoutY="111.0" mnemonicParsing="false" text="x 1.5" />
-            <Button layoutX="65.0" layoutY="111.0" mnemonicParsing="false" text="x 2.0" />
-            <Text layoutX="32.0" layoutY="171.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tamaño de visionado" wrappingWidth="65.8465576171875">
-               <font>
-                  <Font size="10.0" />
-               </font>
-            </Text>
-            <FontAwesomeIconView glyphName="TV" layoutX="12.0" layoutY="178.0" />
-            <Button layoutX="19.0" layoutY="191.0" mnemonicParsing="false" text="x 0.3" />
-            <Button layoutX="65.0" layoutY="191.0" mnemonicParsing="false" text="x 0.5" />
-            <Button layoutX="19.0" layoutY="223.0" mnemonicParsing="false" text="x 0.8" />
-            <Button layoutX="65.0" layoutY="223.0" mnemonicParsing="false" text="x 1.0" />
-            <Button layoutX="91.0" layoutY="2.0" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0">
-               <graphic>
-                  <FontAwesomeIconView glyphName="TIMES" />
-               </graphic>
-            </Button>
-            <Text fill="#535353" layoutX="36.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Editor" textAlignment="CENTER" wrappingWidth="46.64654541015625">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Text>
+                     <graphic>
+                        <FontIcon iconLiteral="fas-window-close" iconSize="15" />
+                     </graphic>
+                  </Button>
+                  <Button fx:id="btnSeleccionarCarpeta" layoutX="134.0" layoutY="7.0" mnemonicParsing="false">
+                     <graphic>
+                        <FontIcon iconLiteral="fas-folder" iconSize="15" />
+                     </graphic>
+                  </Button>
+                  <ListView fx:id="listaArchivos" layoutY="41.0" prefHeight="332.0" prefWidth="200.0" />
+               </children>
+            </Pane>
          </children>
-      </Pane>
+      </VBox>
+      <VBox layoutY="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="472.8" AnchorPane.topAnchor="30.0">
+         <children>
+            <Pane fx:id="pestañaEditor" prefHeight="372.0" prefWidth="127.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Button fx:id="btnVelocidad05" layoutX="19.0" layoutY="79.0" mnemonicParsing="false" text="x 0.5" />
+                  <Button fx:id="btnVelocidad1" layoutX="65.0" layoutY="79.0" mnemonicParsing="false" text="x 1.0" />
+                  <Button fx:id="btnVelocidad15" layoutX="19.0" layoutY="111.0" mnemonicParsing="false" text="x 1.5" />
+                  <Button fx:id="btnVelocidad20" layoutX="65.0" layoutY="111.0" mnemonicParsing="false" text="x 2.0" />
+                  <Text layoutX="32.0" layoutY="171.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tamaño de visionado" wrappingWidth="65.8465576171875">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Text>
+                  <Button fx:id="btnTamaño03" layoutX="19.0" layoutY="191.0" mnemonicParsing="false" text="x 0.3" />
+                  <Button fx:id="btnTamaño05" layoutX="65.0" layoutY="191.0" mnemonicParsing="false" text="x 0.5" />
+                  <Button fx:id="btnTamaño08" layoutX="19.0" layoutY="223.0" mnemonicParsing="false" text="x 0.8" />
+                  <Button fx:id="btnTamaño1" layoutX="65.0" layoutY="223.0" mnemonicParsing="false" text="x 1.0" />
+                  <Button fx:id="btnCloseEditor" layoutX="85.0" layoutY="7.0" mnemonicParsing="false" onAction="#cerrarEditor" prefHeight="15.0" prefWidth="15.0">
+                     <graphic>
+               </graphic>
+                     <graphic>
+                        <FontIcon iconLiteral="fas-window-close" iconSize="15" />
+                     </graphic>
+                  </Button>
+                  <Text fill="#535353" layoutX="36.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Editor" textAlignment="CENTER" wrappingWidth="46.64654541015625">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="31.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Velocidad de reproducción" wrappingWidth="65.8465576171875">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Text>
+                  <FontIcon iconLiteral="fas-hourglass-half" iconSize="15" layoutX="13.0" layoutY="63.0" />
+                  <FontIcon iconLiteral="fas-expand-arrows-alt" iconSize="15" layoutX="12.0" layoutY="179.0" />
+               </children>
+            </Pane>
+         </children>
+      </VBox>
+      <HBox layoutY="330.6000061035156" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <Slider prefHeight="14.0" prefWidth="566.0" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                     <padding>
+                        <Insets left="30.0" right="30.0" />
+                     </padding>
+                  </Slider>
+                  <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Button fx:id="btnFilter" mnemonicParsing="false" onAction="#mostrarEditor" HBox.hgrow="ALWAYS">
+                           <graphic>
+               </graphic>
+                           <graphic>
+                              <FontIcon iconLiteral="fas-sliders-h" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnStop" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" HBox.hgrow="ALWAYS">
+                           <graphic>
+               </graphic>
+                           <graphic>
+                              <FontIcon iconLiteral="fas-stop-circle" iconSize="20" />
+                           </graphic>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnPlay" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" HBox.hgrow="ALWAYS">
+                           <graphic>
+               </graphic>
+                           <graphic>
+                              <FontIcon iconLiteral="fas-play-circle" iconSize="25" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnPause" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" HBox.hgrow="ALWAYS">
+                           <graphic>
+               </graphic>
+                           <graphic>
+                              <FontIcon iconLiteral="fas-pause-circle" iconSize="20" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnAbrirBiblioteca" mnemonicParsing="false" onAction="#mostrarBiblioteca" HBox.hgrow="ALWAYS">
+                           <graphic>
+               </graphic>
+                           <graphic>
+                              <FontIcon iconLiteral="fas-folder-open" iconSize="15" />
+                           </graphic>
+                        </Button>
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

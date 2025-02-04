@@ -1,27 +1,31 @@
+import java.io.IOException;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-public class MediaPlayer extends Application{
-    public static void main(String[] args){
-        launch(args);
-    }
+public class MediaPlayer extends Application {
 
     @Override
-    public void start(Stage primaryStage){
-        primaryStage.setTitle("Ventana Principal");
-        Button btn = new Button("Abrir Nueva Ventana");
-        btn.setOnAction(e -> abrirNuevaVenatana());
-        primaryStage.setScene(new Scene(btn, 300, 250));
-        primaryStage.show();
+    public void start(Stage primaryStage) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Ventana.fxml"));
+            Parent root = loader.load();  // Primero cargamos el FXML
+            
+            // Ahora obtenemos el controlador correctamente
+            BibliotecaController controller = loader.getController();
+            controller.setStage(primaryStage);
+
+            primaryStage.setScene(new Scene(root));
+            primaryStage.setMaximized(true);
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void abrirNuevaVenatana(){
-        Stage nuevaVentana = new Stage();
-        nuevaVentana.setTitle("Nueva Ventana");
-        nuevaVentana.setScene(new Scene(new Button("¡Hola desde la nueva ventana!"), 300, 200));
-        nuevaVentana.show();
+    public static void main(String[] args) {
+        launch(args);
     }
 }
-
