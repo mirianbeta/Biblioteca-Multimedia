@@ -7,7 +7,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -32,7 +34,10 @@ public class BibliotecaController {
     private ListView<String> listaArchivos;
 
     @FXML
-    private Pane pestañaBiblioteca, pestañaEditor, pantalla;
+    private Pane pestañaBiblioteca, pestañaEditor;
+
+    @FXML
+    private StackPane pantalla;
 
     @FXML
     private MediaView mediaView;
@@ -45,6 +50,9 @@ public class BibliotecaController {
 
     @FXML
     private Slider sliderTiempo;
+
+    @FXML
+    private Label tituloArchivo;
 
     private Stage stage;
     private String rutaDirectorio;
@@ -187,6 +195,12 @@ public class BibliotecaController {
 
         mediaPlayer = new MediaPlayer(media);
         mediaView.setMediaPlayer(mediaPlayer);
+
+        // Actualizar el título
+        Platform.runLater(() -> {
+            tituloArchivo.setText(archivo.getName()); // Establecer el nombre del archivo como texto
+            tituloArchivo.setVisible(true); // Asegurarse de que el título sea visible
+        });
 
         mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
             // Actualiza el slider con el progreso de la reproducción
