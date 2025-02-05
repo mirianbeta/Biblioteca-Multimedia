@@ -7,10 +7,12 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
@@ -45,8 +47,13 @@
             </MenuBar>
          </children>
       </HBox>
-      <Pane layoutX="90.0" layoutY="28.0" prefHeight="298.0" prefWidth="600.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
-      <VBox layoutX="440.0" layoutY="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+      <Pane fx:id="pantalla" layoutY="30.0" prefHeight="298.0" prefWidth="600.0" style="-fx-background-color: blue;" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+         <children>
+            <ImageView fx:id="imageViewAudio" fitHeight="150.0" fitWidth="200.0" layoutX="200.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" visible="false" />
+            <MediaView fx:id="mediaView" fitHeight="200.0" fitWidth="200.0" layoutX="200.0" layoutY="51.0" />
+         </children>
+      </Pane>
+      <VBox layoutX="600.0" layoutY="30.0" AnchorPane.bottomAnchor="100.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
          <children>
             <Pane fx:id="pestañaBiblioteca" prefHeight="372.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <children>
@@ -62,24 +69,24 @@
                         <FontIcon iconLiteral="fas-window-close" iconSize="15" />
                      </graphic>
                   </Button>
-                  <Button fx:id="btnSeleccionarCarpeta" layoutX="134.0" layoutY="7.0" mnemonicParsing="false">
+                  <Button fx:id="btnSeleccionarCarpeta" layoutX="134.0" layoutY="7.0" mnemonicParsing="false" onAction="#seleccionarCarpeta">
                      <graphic>
                         <FontIcon iconLiteral="fas-folder" iconSize="15" />
                      </graphic>
                   </Button>
-                  <ListView fx:id="listaArchivos" layoutY="41.0" prefHeight="332.0" prefWidth="200.0" />
+                  <ListView fx:id="listaArchivos" layoutY="41.0" onMouseClicked="#reproducirArchivoSeleccionado" prefHeight="332.0" prefWidth="200.0" />
                </children>
             </Pane>
          </children>
       </VBox>
-      <VBox layoutY="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="472.8" AnchorPane.topAnchor="30.0">
+      <VBox layoutY="30.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="30.0">
          <children>
             <Pane fx:id="pestañaEditor" prefHeight="372.0" prefWidth="127.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnVelocidad05" layoutX="19.0" layoutY="79.0" mnemonicParsing="false" text="x 0.5" />
-                  <Button fx:id="btnVelocidad1" layoutX="65.0" layoutY="79.0" mnemonicParsing="false" text="x 1.0" />
-                  <Button fx:id="btnVelocidad15" layoutX="19.0" layoutY="111.0" mnemonicParsing="false" text="x 1.5" />
-                  <Button fx:id="btnVelocidad20" layoutX="65.0" layoutY="111.0" mnemonicParsing="false" text="x 2.0" />
+                  <Button fx:id="btnVelocidad05" layoutX="19.0" layoutY="79.0" mnemonicParsing="false" onAction="#cambiarVelocidad05" text="x 0.5" />
+                  <Button fx:id="btnVelocidad1" layoutX="65.0" layoutY="79.0" mnemonicParsing="false" onAction="#cambiarVelocidad1" text="x 1.0" />
+                  <Button fx:id="btnVelocidad15" layoutX="19.0" layoutY="111.0" mnemonicParsing="false" onAction="#cambiarVelocidad15" text="x 1.5" />
+                  <Button fx:id="btnVelocidad20" layoutX="65.0" layoutY="111.0" mnemonicParsing="false" onAction="#cambiarVelocidad2" text="x 2.0" />
                   <Text layoutX="32.0" layoutY="171.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tamaño de visionado" wrappingWidth="65.8465576171875">
                      <font>
                         <Font size="10.0" />
@@ -116,7 +123,7 @@
          <children>
             <VBox HBox.hgrow="ALWAYS">
                <children>
-                  <Slider prefHeight="14.0" prefWidth="566.0" VBox.vgrow="ALWAYS">
+                  <Slider fx:id="sliderTiempo" onMouseReleased="#cambiarTiempo" prefHeight="14.0" prefWidth="566.0" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets top="5.0" />
                      </VBox.margin>
@@ -133,7 +140,7 @@
                               <FontIcon iconLiteral="fas-sliders-h" />
                            </graphic>
                         </Button>
-                        <Button fx:id="btnStop" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" HBox.hgrow="ALWAYS">
+                        <Button fx:id="btnStop" mnemonicParsing="false" onAction="#stop" prefHeight="30.0" prefWidth="30.0" HBox.hgrow="ALWAYS">
                            <graphic>
                </graphic>
                            <graphic>
@@ -143,14 +150,14 @@
                               <Insets />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="btnPlay" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" HBox.hgrow="ALWAYS">
+                        <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#play" prefHeight="35.0" prefWidth="35.0" HBox.hgrow="ALWAYS">
                            <graphic>
                </graphic>
                            <graphic>
                               <FontIcon iconLiteral="fas-play-circle" iconSize="25" />
                            </graphic>
                         </Button>
-                        <Button fx:id="btnPause" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" HBox.hgrow="ALWAYS">
+                        <Button fx:id="btnPause" mnemonicParsing="false" onAction="#pause" prefHeight="30.0" prefWidth="30.0" HBox.hgrow="ALWAYS">
                            <graphic>
                </graphic>
                            <graphic>
