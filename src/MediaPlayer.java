@@ -3,6 +3,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class MediaPlayer extends Application {
@@ -19,6 +20,9 @@ public class MediaPlayer extends Application {
 
             primaryStage.setScene(new Scene(root));
             primaryStage.setMaximized(true);
+            primaryStage.setResizable(false);
+            primaryStage.setTitle("Biblioteca multimedia");
+        primaryStage.getIcons().add(new Image("file:src/img/icono.png"));
             primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();

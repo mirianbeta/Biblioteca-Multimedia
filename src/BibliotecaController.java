@@ -3,13 +3,16 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -18,9 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javafx.scene.media.Media;
@@ -61,7 +62,6 @@ public class BibliotecaController {
 
     private Stage stage;
     private String rutaDirectorio;
-    private String rutaArchivo;
     private MediaPlayer mediaPlayer;
     private final Map<File, String> duraciones = new HashMap<>();
 
@@ -71,13 +71,17 @@ public class BibliotecaController {
 
     @FXML
     private void seleccionarCarpeta() {
-        DirectoryChooser directorioChooser = new DirectoryChooser();
-        directorioChooser.setTitle("Seleccionar Carpeta");
+        try {
+            DirectoryChooser directorioChooser = new DirectoryChooser();
+            directorioChooser.setTitle("Seleccionar Carpeta");
+            File carpetaSeleccionada = directorioChooser.showDialog(stage);
 
-        File carpetaSeleccionada = directorioChooser.showDialog(stage);
-        if (carpetaSeleccionada != null) {
-            rutaDirectorio = carpetaSeleccionada.getAbsolutePath();
-            cargarArchivos();
+            if (carpetaSeleccionada != null) {
+                rutaDirectorio = carpetaSeleccionada.getAbsolutePath();
+                cargarArchivos();
+            }
+        } catch (SecurityException e) {
+            mostrarAlerta("Error de acceso", "No tienes permisos para acceder a esta carpeta.");
         }
     }
 
@@ -177,8 +181,6 @@ public class BibliotecaController {
         sliderTiempo.setBlockIncrement(1); // Incremento cuando se arrastra el slider
         sliderTiempo.setMax(100); // Definir un rango máximo, por ejemplo, el 100% de la duración del archivo
 
-        // Esperamos a que JavaFX haya completado la construcción de la vista antes de
-        // manipular el mediaView
         if (mediaView != null) {
             pantalla.getChildren().add(mediaView); // Agregar mediaView al pane
         }
@@ -216,7 +218,9 @@ public class BibliotecaController {
         // Actualizar el título
         Platform.runLater(() -> {
             tituloArchivo.setText(archivo.getName()); // Establecer el nombre del archivo como texto
-            
+            HBox.setHgrow(tituloArchivo, Priority.ALWAYS);
+            tituloArchivo.setMaxWidth(Double.MAX_VALUE);
+
             tituloArchivo.setVisible(true); // Asegurarse de que el título sea visible
         });
 
@@ -271,9 +275,9 @@ public class BibliotecaController {
     @FXML
     private void cambiarTiempo() {
         if (mediaPlayer != null) {
-            double porcentaje = sliderTiempo.getValue(); // Obtener el valor del slider (porcentaje)
-            double tiempo = (mediaPlayer.getTotalDuration().toSeconds() * porcentaje) / 100; // Convertir a tiempo real
-            mediaPlayer.seek(Duration.seconds(tiempo)); // Cambiar la posición de reproducción
+            double porcentaje = sliderTiempo.getValue();
+            double tiempo = (mediaPlayer.getTotalDuration().toSeconds() * porcentaje) / 100;
+            mediaPlayer.seek(Duration.seconds(tiempo));
         }
     }
 
@@ -304,4 +308,100 @@ public class BibliotecaController {
             mediaPlayer.setRate(2);
         }
     }
+
+    @FXML
+    private void cambiarTamaño03() {
+        double porcentaje = 0.3;
+        double nuevoAncho = pantalla.getWidth() * porcentaje;
+        double nuevoAlto = pantalla.getHeight() * porcentaje;
+
+        mediaView.setFitWidth(nuevoAncho);
+        mediaView.setFitHeight(nuevoAlto);
+
+        StackPane.setAlignment(mediaView, Pos.CENTER);
+    }
+
+    @FXML
+    private void cambiarTamaño05() {
+        double porcentaje = 0.5;
+        double nuevoAncho = pantalla.getWidth() * porcentaje;
+        double nuevoAlto = pantalla.getHeight() * porcentaje;
+
+        mediaView.setFitWidth(nuevoAncho);
+        mediaView.setFitHeight(nuevoAlto);
+
+        StackPane.setAlignment(mediaView, Pos.CENTER);
+    }
+
+    @FXML
+    private void cambiarTamaño08() {
+        double porcentaje = 0.8;
+        double nuevoAncho = pantalla.getWidth() * porcentaje;
+        double nuevoAlto = pantalla.getHeight() * porcentaje;
+
+        mediaView.setFitWidth(nuevoAncho);
+        mediaView.setFitHeight(nuevoAlto);
+
+        StackPane.setAlignment(mediaView, Pos.CENTER);
+    }
+
+    @FXML
+    private void cambiarTamaño1() {
+        double porcentaje = 1;
+        double nuevoAncho = pantalla.getWidth() * porcentaje;
+        double nuevoAlto = pantalla.getHeight() * porcentaje;
+
+        mediaView.setFitWidth(nuevoAncho);
+        mediaView.setFitHeight(nuevoAlto);
+
+        StackPane.setAlignment(mediaView, Pos.CENTER);
+    }
+
+    @FXML
+    private void cerrarAplicacion() {
+        Platform.exit();
+        System.exit(0);
+    }
+
+    @FXML
+    private void actualizarBiblioteca() {
+        if (rutaDirectorio != null) {
+            cargarArchivos();
+        } else {
+            mostrarAlerta("No hay biblioteca seleccionada", "Selecciona una carpeta antes de actualizar.");
+        }
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
+
+    @FXML
+    private void mostrarAcercaDe() {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Acerca de esta app");
+        alerta.setHeaderText("Información del Programa");
+        alerta.setContentText("Creador: Mirian\nVersión: 1.0.0");
+
+        alerta.showAndWait();
+    }
+
+    @FXML
+    private void alternarEditorBiblioteca() {
+        boolean editorVisible = pestañaEditor.isVisible();
+        boolean bibliotecaVisible = pestañaBiblioteca.isVisible();
+
+        if (editorVisible && bibliotecaVisible) {
+            pestañaEditor.setVisible(false);
+            pestañaBiblioteca.setVisible(false);
+        } else {
+            pestañaEditor.setVisible(true);
+            pestañaBiblioteca.setVisible(true);
+        }
+    }
+
 }
