@@ -1,7 +1,96 @@
 .root {
-    -fx-background: linear-gradient(to bottom, #30203D, #8582B3);
+    -fx-background-color: linear-gradient(to bottom, #30203D, #8582B3);
 }
 
-.menubar{
+.button {
+    -fx-background-color: none;
+}
+
+/* Cambia el color del menú superior */
+.menubar {
     -fx-background-color: #30203D;
+}
+
+/* Elimina el borde azul en el hover del MenuBar */
+.menu-bar {
+    -fx-background-color: #30203D;
+    -fx-border-color: transparent;
+}
+
+.menu-bar .label {
+    -fx-text-fill: #ffffff;  
+    -fx-background-color: #30203D;
+}
+
+/* Elimina el recuadro azul al pasar por el menú */
+.menu-bar .menu:hover {
+    -fx-background-color: #30203D !important;
+    -fx-border-color: transparent !important;
+}
+
+.menu-bar .menu:focused, 
+.menu-bar .menu:hover, 
+.menu-bar .menu:selected {
+    -fx-background-color: #30203D !important;
+    -fx-border-color: transparent !important;
+    
+    
+}
+
+/* Cambia el color del texto de los elementos desplegables */
+.context-menu {
+    -fx-background-color: #30203D;
+}
+
+.menu-item {
+    -fx-background-color: #30203D;
+    -fx-text-fill: #42dbfe;  /* Azul bebé */
+}
+
+/* Mantiene el color azul bebé en hover */
+.menu-item:hover {
+    -fx-background-color: #30203D !important;
+    -fx-text-fill: #42dbfe; 
+}
+
+/* Elimina cualquier borde azul por defecto */
+.menu-item:focused, 
+.menu-item:selected {
+    -fx-background-color: #30203D !important;
+    -fx-border-color: transparent !important;
+}
+
+
+
+.icon-white{
+    -fx-icon-color: white;
+}
+
+.text-white{
+    -fx-fill: white;
+}
+
+.botonesConTexto {
+    -fx-background-color: white; 
+    -fx-text-fill: #333333; 
+    -fx-font-size: 14px; 
+    -fx-font-weight: bold; 
+    -fx-background-radius: 8px; 
+    -fx-border-radius: 8px;
+    -fx-border-color: #DDDDDD; 
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(200, 200, 200, 0.6), 5, 0.3, 2, 2);
+    -fx-cursor: hand; 
+    -fx-transition: all 0.3s ease-in-out; 
+}
+
+.botonesConTexto:hover {
+    -fx-background-color: #F8F8F8; 
+    -fx-border-color: #CCCCCC; 
+    -fx-effect: dropshadow(gaussian, rgba(150, 150, 150, 0.6), 8, 0.4, 3, 3); 
+}
+
+.botonesConTexto:pressed {
+    -fx-background-color: #EDEDED; 
+    -fx-effect: dropshadow(gaussian, rgba(100, 100, 100, 0.5), 4, 0.2, 1, 1);
 }

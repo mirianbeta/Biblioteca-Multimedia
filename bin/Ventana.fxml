@@ -19,13 +19,13 @@
 <?import javafx.scene.text.Text?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BibliotecaController">
+<AnchorPane styleClass="root" stylesheets="@Diseño.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BibliotecaController">
    <children>
       <HBox prefHeight="332.0" prefWidth="600.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <MenuBar prefHeight="30.0" prefWidth="600.0" HBox.hgrow="ALWAYS">
+            <MenuBar prefHeight="30.0" prefWidth="600.0" styleClass="menubar" HBox.hgrow="ALWAYS">
               <menus>
-                <Menu mnemonicParsing="false" text="Archivo">
+                <Menu mnemonicParsing="false" style="-fx-text: white;" styleClass="menu-white" text="Archivo">
                   <items>
                     <MenuItem mnemonicParsing="false" onAction="#seleccionarCarpeta" text="Abrir carpeta" />
                         <MenuItem mnemonicParsing="false" onAction="#cerrarAplicacion" text="Close" />
@@ -61,7 +61,7 @@
                   <Insets />
                </StackPane.margin>
                <children>
-                  <Label fx:id="tituloArchivo" alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+                  <Label fx:id="tituloArchivo" alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="600.0" styleClass="text-white" textFill="WHITE" VBox.vgrow="ALWAYS">
                      <font>
                         <Font size="20.0" />
                      </font>
@@ -83,21 +83,21 @@
          <children>
             <Pane fx:id="pestañaBiblioteca" prefHeight="372.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Text fill="#535353" layoutX="57.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Biblioteca" textAlignment="CENTER" wrappingWidth="65.8465576171875">
+                  <Text fill="#535353" layoutX="57.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-white" text="Biblioteca" textAlignment="CENTER" wrappingWidth="65.8465576171875">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Text>
-                  <Button fx:id="btnCloseBiblioteca" layoutX="14.0" layoutY="7.0" mnemonicParsing="false" onAction="#cerrarBiblioteca" prefHeight="15.0" prefWidth="15.0">
+                  <Button fx:id="btnCloseBiblioteca" layoutX="-1.0" layoutY="7.0" mnemonicParsing="false" onAction="#cerrarBiblioteca" prefHeight="15.0" prefWidth="15.0">
                      <graphic>
                </graphic>
                      <graphic>
-                        <FontIcon iconLiteral="fas-window-close" iconSize="15" />
+                        <FontIcon iconLiteral="fas-window-close" iconSize="15" styleClass="icon-white" />
                      </graphic>
                   </Button>
                   <Button fx:id="btnSeleccionarCarpeta" layoutX="134.0" layoutY="7.0" mnemonicParsing="false" onAction="#seleccionarCarpeta">
                      <graphic>
-                        <FontIcon iconLiteral="fas-folder" iconSize="15" />
+                        <FontIcon iconLiteral="fas-folder" iconSize="15" styleClass="icon-white" />
                      </graphic>
                   </Button>
                   <ListView fx:id="listaArchivos" layoutY="41.0" onMouseClicked="#reproducirArchivoSeleccionado" prefHeight="332.0" prefWidth="200.0" />
@@ -107,40 +107,38 @@
       </VBox>
       <VBox layoutY="30.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="30.0">
          <children>
-            <Pane fx:id="pestañaEditor" prefHeight="372.0" prefWidth="127.0" VBox.vgrow="ALWAYS">
+            <Pane fx:id="pestañaEditor" prefHeight="372.0" prefWidth="160.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnVelocidad05" layoutX="19.0" layoutY="79.0" mnemonicParsing="false" onAction="#cambiarVelocidad05" text="x 0.5" />
-                  <Button fx:id="btnVelocidad1" layoutX="65.0" layoutY="79.0" mnemonicParsing="false" onAction="#cambiarVelocidad1" text="x 1.0" />
-                  <Button fx:id="btnVelocidad15" layoutX="19.0" layoutY="111.0" mnemonicParsing="false" onAction="#cambiarVelocidad15" text="x 1.5" />
-                  <Button fx:id="btnVelocidad20" layoutX="65.0" layoutY="111.0" mnemonicParsing="false" onAction="#cambiarVelocidad2" text="x 2.0" />
-                  <Text layoutX="32.0" layoutY="171.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tamaño de visionado" wrappingWidth="65.8465576171875">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Text>
-                  <Button fx:id="btnTamaño03" layoutX="13.0" layoutY="191.0" mnemonicParsing="false" onAction="#cambiarTamaño03" prefHeight="25.0" prefWidth="45.0" text="30%" />
-                  <Button fx:id="btnTamaño05" layoutX="65.0" layoutY="191.0" mnemonicParsing="false" onAction="#cambiarTamaño05" prefHeight="25.0" prefWidth="45.0" text="50%" />
-                  <Button fx:id="btnTamaño08" layoutX="13.0" layoutY="223.0" mnemonicParsing="false" onAction="#cambiarTamaño08" prefHeight="25.0" prefWidth="45.0" text="80%" />
-                  <Button fx:id="btnTamaño1" layoutX="65.0" layoutY="223.0" mnemonicParsing="false" onAction="#cambiarTamaño1" text="100%" />
-                  <Button fx:id="btnCloseEditor" layoutX="85.0" layoutY="7.0" mnemonicParsing="false" onAction="#cerrarEditor" prefHeight="15.0" prefWidth="15.0">
+                  <Button fx:id="btnVelocidad05" layoutX="12.0" layoutY="79.0" mnemonicParsing="false" onAction="#cambiarVelocidad05" prefHeight="31.0" prefWidth="59.0" styleClass="botonesConTexto" text="x 0.5" />
+                  <Button fx:id="btnVelocidad1" layoutX="84.0" layoutY="79.0" mnemonicParsing="false" onAction="#cambiarVelocidad1" prefHeight="31.0" prefWidth="59.0" styleClass="botonesConTexto" text="x 1.0" />
+                  <Button fx:id="btnVelocidad15" layoutX="12.0" layoutY="119.0" mnemonicParsing="false" onAction="#cambiarVelocidad15" prefHeight="31.0" prefWidth="59.0" styleClass="botonesConTexto" text="x 1.5" />
+                  <Button fx:id="btnVelocidad20" layoutX="84.0" layoutY="119.0" mnemonicParsing="false" onAction="#cambiarVelocidad2" prefHeight="31.0" prefWidth="59.0" styleClass="botonesConTexto" text="x 2.0" />
+                  <Text layoutX="47.0" layoutY="190.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-white" text="Tamaño de visionado" wrappingWidth="65.8465576171875" />
+                  <Button fx:id="btnTamaño03" layoutX="12.0" layoutY="216.0" mnemonicParsing="false" onAction="#cambiarTamaño03" prefHeight="31.0" prefWidth="59.0" styleClass="botonesConTexto" text="30%" />
+                  <Button fx:id="btnTamaño05" layoutX="89.0" layoutY="216.0" mnemonicParsing="false" onAction="#cambiarTamaño05" prefHeight="31.0" prefWidth="59.0" styleClass="botonesConTexto" text="50%" />
+                  <Button fx:id="btnTamaño08" layoutX="12.0" layoutY="261.0" mnemonicParsing="false" onAction="#cambiarTamaño08" prefHeight="31.0" prefWidth="59.0" styleClass="botonesConTexto" text="80%" />
+                  <Button fx:id="btnTamaño1" layoutX="89.0" layoutY="261.0" mnemonicParsing="false" onAction="#cambiarTamaño1" prefHeight="31.0" prefWidth="59.0" styleClass="botonesConTexto" text="100%" />
+                  <Button fx:id="btnCloseEditor" layoutX="121.0" layoutY="7.0" mnemonicParsing="false" onAction="#cerrarEditor" prefHeight="15.0" prefWidth="15.0">
                      <graphic>
                </graphic>
                      <graphic>
-                        <FontIcon iconLiteral="fas-window-close" iconSize="15" />
+                        <FontIcon iconLiteral="fas-window-close" iconSize="15" styleClass="icon-white" />
                      </graphic>
                   </Button>
-                  <Text fill="#535353" layoutX="36.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Editor" textAlignment="CENTER" wrappingWidth="46.64654541015625">
+                  <Text fill="#535353" layoutX="57.0" layoutY="24.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-white" text="Editor" textAlignment="CENTER" wrappingWidth="46.64654541015625">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Text>
-                  <Text layoutX="31.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Velocidad de reproducción" wrappingWidth="65.8465576171875">
+                  <Text layoutX="46.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-white" text="Velocidad de reproducción" wrappingWidth="84.24652099609375" />
+                  <FontIcon iconLiteral="fas-hourglass-half" iconSize="15" layoutX="19.0" layoutY="61.0" styleClass="icon-white">
                      <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Text>
-                  <FontIcon iconLiteral="fas-hourglass-half" iconSize="15" layoutX="13.0" layoutY="63.0" />
-                  <FontIcon iconLiteral="fas-expand-arrows-alt" iconSize="15" layoutX="12.0" layoutY="179.0" />
+                        <Font size="14.0" />
+                     </font></FontIcon>
+                  <FontIcon iconLiteral="fas-expand-arrows-alt" iconSize="15" layoutX="18.0" layoutY="198.0" styleClass="icon-white">
+                     <font>
+                        <Font size="14.0" />
+                     </font></FontIcon>
                </children>
             </Pane>
          </children>
