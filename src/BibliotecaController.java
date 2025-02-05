@@ -1,5 +1,7 @@
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
@@ -10,13 +12,16 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -31,7 +36,7 @@ public class BibliotecaController {
             btnVelocidad1, btnVelocidad15, btnVelocidad20;
 
     @FXML
-    private ListView<String> listaArchivos;
+    private ListView<File> listaArchivos;
 
     @FXML
     private Pane pestañaBiblioteca, pestañaEditor;
@@ -58,6 +63,7 @@ public class BibliotecaController {
     private String rutaDirectorio;
     private String rutaArchivo;
     private MediaPlayer mediaPlayer;
+    private final Map<File, String> duraciones = new HashMap<>();
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -76,18 +82,59 @@ public class BibliotecaController {
     }
 
     private void cargarArchivos() {
-        List<String> archivos = new ArrayList<>();
+        ObservableList<File> archivos = FXCollections.observableArrayList();
         File directorio = new File(rutaDirectorio);
 
         if (directorio.exists() && directorio.isDirectory()) {
             for (File archivo : directorio.listFiles()) {
                 if (archivo.isFile() && (archivo.getName().endsWith(".mp3") || archivo.getName().endsWith(".mp4"))) {
-                    archivos.add(archivo.getName());
+                    archivos.add(archivo);
+                    obtenerDuracion(archivo);
                 }
             }
         }
 
-        listaArchivos.getItems().setAll(archivos);
+        listaArchivos.setItems(archivos);
+        listaArchivos.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(File archivo, boolean empty) {
+                super.updateItem(archivo, empty);
+                if (empty || archivo == null) {
+                    setText(null);
+                } else {
+                    String formato = archivo.getName().substring(archivo.getName().lastIndexOf(".") + 1).toUpperCase();
+                    String duracion = duraciones.getOrDefault(archivo, "Cargando...");
+                    setText(String.format("%s | %s | %s", archivo.getName(), formato, duracion));
+                }
+            }
+        });
+    }
+
+    private void obtenerDuracion(File archivo) {
+        Media media = new Media(archivo.toURI().toString());
+        MediaPlayer tempPlayer = new MediaPlayer(media);
+
+        tempPlayer.setOnReady(() -> {
+            double segundos = media.getDuration().toSeconds();
+            String duracion = formatearDuracion(segundos);
+
+            duraciones.put(archivo, duracion); // Guardamos la duración en el mapa
+            Platform.runLater(() -> listaArchivos.refresh()); // Refrescamos la UI
+
+            tempPlayer.dispose();
+        });
+
+        tempPlayer.setOnError(() -> {
+            duraciones.put(archivo, "Desconocido");
+            Platform.runLater(() -> listaArchivos.refresh());
+            tempPlayer.dispose();
+        });
+    }
+
+    private String formatearDuracion(double segundos) {
+        int minutos = (int) (segundos / 60);
+        int segs = (int) (segundos % 60);
+        return String.format("%02d:%02d", minutos, segs);
     }
 
     @FXML
@@ -112,18 +159,11 @@ public class BibliotecaController {
 
     @FXML
     private void reproducirArchivoSeleccionado(MouseEvent event) {
-        // Verificar que el doble clic ha ocurrido
-        if (event.getClickCount() == 2) {
-            String archivoSeleccionado = listaArchivos.getSelectionModel().getSelectedItem();
+        if (event.getClickCount() == 2) { // Doble clic
+            File archivo = listaArchivos.getSelectionModel().getSelectedItem();
 
-            if (archivoSeleccionado != null) {
-                // Crear el objeto File con la ruta completa del archivo seleccionado
-                File archivo = new File(rutaDirectorio + File.separator + archivoSeleccionado);
-
-                if (archivo.exists()) {
-                    // Llamar al método para reproducir el archivo
-                    reproducirArchivo(archivo);
-                }
+            if (archivo != null && archivo.exists()) {
+                reproducirArchivo(archivo);
             }
         }
     }
@@ -158,32 +198,9 @@ public class BibliotecaController {
 
         // Evento para manejar el doble clic sobre los archivos
         listaArchivos.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Verifica si fue un doble clic
-                String archivoSeleccionado = listaArchivos.getSelectionModel().getSelectedItem();
-                if (archivoSeleccionado != null) {
-                    // Crear el objeto File con la ruta completa del archivo
-                    File archivo = new File(rutaDirectorio + File.separator + archivoSeleccionado);
-
-                    if (archivo.exists()) {
-                        reproducirArchivo(archivo); // Reproducir el archivo seleccionado
-                    }
-                }
-            }
+            reproducirArchivoSeleccionado(event);
         });
     }
-
-    /*
-     * private void reproducirArchivo(File archivo) {
-     * String archivoRuta = archivo.toURI().toString();
-     * Media media = new Media(archivoRuta);
-     * if (mediaPlayer != null) {
-     * mediaPlayer.stop(); // Detener cualquier reproducción anterior
-     * }
-     * mediaPlayer = new MediaPlayer(media);
-     * mediaView.setMediaPlayer(mediaPlayer); // Asignar el mediaPlayer al MediaView
-     * mediaPlayer.play(); // Reproducir el archivo
-     * }
-     */
 
     private void reproducirArchivo(File archivo) {
         String archivoRuta = archivo.toURI().toString();
@@ -199,6 +216,7 @@ public class BibliotecaController {
         // Actualizar el título
         Platform.runLater(() -> {
             tituloArchivo.setText(archivo.getName()); // Establecer el nombre del archivo como texto
+            
             tituloArchivo.setVisible(true); // Asegurarse de que el título sea visible
         });
 
