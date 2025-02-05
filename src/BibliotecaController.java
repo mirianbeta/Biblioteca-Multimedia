@@ -21,14 +21,21 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * Controlador de la Biblioteca para gestionar archivos multimedia.
+ * Proporciona funcionalidades para seleccionar una carpeta, listar archivos,
+ * reproducir medios y controlar la reproducción.
+ */
 public class BibliotecaController {
 
     @FXML
@@ -65,10 +72,19 @@ public class BibliotecaController {
     private MediaPlayer mediaPlayer;
     private final Map<File, String> duraciones = new HashMap<>();
 
+    /**
+     * Asigna el escenario principal.
+     * 
+     * @param stage Escenario principal.
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Abre un selector de directorios y carga los archivos multimedia de la carpeta
+     * seleccionada.
+     */
     @FXML
     private void seleccionarCarpeta() {
         try {
@@ -85,172 +101,341 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Carga los archivos multimedia del directorio seleccionado en la lista de
+     * archivos.
+     */
     private void cargarArchivos() {
         ObservableList<File> archivos = FXCollections.observableArrayList();
         File directorio = new File(rutaDirectorio);
 
-        if (directorio.exists() && directorio.isDirectory()) {
-            for (File archivo : directorio.listFiles()) {
-                if (archivo.isFile() && (archivo.getName().endsWith(".mp3") || archivo.getName().endsWith(".mp4"))) {
-                    archivos.add(archivo);
-                    obtenerDuracion(archivo);
+        try {
+            if (!directorio.exists() || !directorio.isDirectory()) {
+                throw new IllegalArgumentException("La ruta especificada no es un directorio válido.");
+            }
+
+            File[] archivosLista = directorio.listFiles();
+            if (archivosLista == null) {
+                throw new NullPointerException("Error al listar archivos en el directorio.");
+            }
+
+            for (File archivo : archivosLista) {
+                try {
+                    if (archivo.isFile()
+                            && (archivo.getName().endsWith(".mp3") || archivo.getName().endsWith(".mp4"))) {
+                        archivos.add(archivo);
+                        obtenerDuracion(archivo);
+                    }
+                } catch (SecurityException e) {
+                    System.err.println("No se tiene permiso para acceder al archivo: " + archivo.getName());
                 }
             }
+
+            listaArchivos.setItems(archivos);
+            listaArchivos.setCellFactory(param -> new ListCell<>() {
+                @Override
+                protected void updateItem(File archivo, boolean empty) {
+                    super.updateItem(archivo, empty);
+                    if (empty || archivo == null) {
+                        setText(null);
+                    } else {
+                        try {
+                            String formato = archivo.getName().substring(archivo.getName().lastIndexOf(".") + 1)
+                                    .toUpperCase();
+                            String duracion = duraciones.getOrDefault(archivo, "Cargando...");
+                            setText(String.format("%s | %s | %s", archivo.getName(), formato, duracion));
+                        } catch (IndexOutOfBoundsException e) {
+                            setText(archivo.getName() + " | Formato desconocido");
+                        }
+                    }
+                }
+            });
+
+        } catch (IllegalArgumentException | NullPointerException e) {
+            System.err.println("Error al cargar archivos: " + e.getMessage());
         }
-
-        listaArchivos.setItems(archivos);
-        listaArchivos.setCellFactory(param -> new ListCell<>() {
-            @Override
-            protected void updateItem(File archivo, boolean empty) {
-                super.updateItem(archivo, empty);
-                if (empty || archivo == null) {
-                    setText(null);
-                } else {
-                    String formato = archivo.getName().substring(archivo.getName().lastIndexOf(".") + 1).toUpperCase();
-                    String duracion = duraciones.getOrDefault(archivo, "Cargando...");
-                    setText(String.format("%s | %s | %s", archivo.getName(), formato, duracion));
-                }
-            }
-        });
     }
 
+    /**
+     * Obtiene la duración de un archivo multimedia.
+     * 
+     * @param archivo Archivo multimedia del cual se quiere obtener la duración.
+     */
     private void obtenerDuracion(File archivo) {
-        Media media = new Media(archivo.toURI().toString());
-        MediaPlayer tempPlayer = new MediaPlayer(media);
+        try {
+            Media media = new Media(archivo.toURI().toString());
+            MediaPlayer tempPlayer = new MediaPlayer(media);
 
-        tempPlayer.setOnReady(() -> {
-            double segundos = media.getDuration().toSeconds();
-            String duracion = formatearDuracion(segundos);
+            tempPlayer.setOnReady(() -> {
+                double segundos = media.getDuration().toSeconds();
+                String duracion = formatearDuracion(segundos);
+                duraciones.put(archivo, duracion);
+                Platform.runLater(() -> listaArchivos.refresh());
+                tempPlayer.dispose();
+            });
 
-            duraciones.put(archivo, duracion); // Guardamos la duración en el mapa
-            Platform.runLater(() -> listaArchivos.refresh()); // Refrescamos la UI
-
-            tempPlayer.dispose();
-        });
-
-        tempPlayer.setOnError(() -> {
-            duraciones.put(archivo, "Desconocido");
-            Platform.runLater(() -> listaArchivos.refresh());
-            tempPlayer.dispose();
-        });
+            tempPlayer.setOnError(() -> {
+                duraciones.put(archivo, "Desconocido");
+                Platform.runLater(() -> listaArchivos.refresh());
+                tempPlayer.dispose();
+            });
+        } catch (IllegalArgumentException e) {
+            duraciones.put(archivo, "Formato no compatible");
+            listaArchivos.refresh();
+        }
     }
 
+    /**
+     * Formatea la duración en segundos en formato mm:ss.
+     * 
+     * @param segundos Duración en segundos.
+     * @return Cadena formateada de duración.
+     */
     private String formatearDuracion(double segundos) {
         int minutos = (int) (segundos / 60);
         int segs = (int) (segundos % 60);
         return String.format("%02d:%02d", minutos, segs);
     }
 
+    /**
+     * Oculta la pestaña del editor.
+     */
     @FXML
     private void cerrarEditor() {
         pestañaEditor.setVisible(false);
     }
 
+    /**
+     * Muestra la pestaña del editor.
+     */
     @FXML
     private void mostrarEditor() {
         pestañaEditor.setVisible(true);
     }
 
+    /**
+     * Muestra la pestaña de la biblioteca.
+     */
     @FXML
     private void mostrarBiblioteca() {
         pestañaBiblioteca.setVisible(true);
     }
 
+    /**
+     * Oculta la pestaña de la biblioteca.
+     */
     @FXML
     private void cerrarBiblioteca() {
         pestañaBiblioteca.setVisible(false);
     }
 
+    /**
+     * Reproduce el archivo seleccionado de la lista al hacer doble clic.
+     * 
+     * @param event Evento de mouse.
+     */
     @FXML
     private void reproducirArchivoSeleccionado(MouseEvent event) {
-        if (event.getClickCount() == 2) { // Doble clic
-            File archivo = listaArchivos.getSelectionModel().getSelectedItem();
+        try {
+            if (event.getClickCount() == 2) { // Doble clic
+                File archivo = listaArchivos.getSelectionModel().getSelectedItem();
 
-            if (archivo != null && archivo.exists()) {
+                if (archivo == null) {
+                    throw new NullPointerException("No se ha seleccionado ningún archivo.");
+                }
+
+                if (!archivo.exists()) {
+                    throw new FileNotFoundException("El archivo seleccionado no existe: " + archivo.getAbsolutePath());
+                }
+
                 reproducirArchivo(archivo);
             }
+        } catch (FileNotFoundException | NullPointerException e) {
+            System.err.println("Error al reproducir archivo: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error inesperado al reproducir archivo: " + e.getMessage());
         }
     }
 
+    /**
+     * Configura los componentes de la interfaz gráfica, inicializando el slider de
+     * tiempo,
+     * ajustando la vista multimedia al tamaño del contenedor y asignando eventos a
+     * los botones y la lista de archivos.
+     * 
+     * Se establecen los valores iniciales para el slider de tiempo y se asignan
+     * listeners para que su tamaño
+     * se ajuste al progreso del vídeo o canción. Además, se maneja la integración
+     * de la vista multimedia
+     * en el contenedor correspondiente.
+     * 
+     * Se capturan excepciones para manejar posibles errores en la inicialización de
+     * los componentes.
+     */
     @FXML
     private void configurarComponentes() {
+        try {
+            // Inicializar el slider y asignarle un listener para que se actualice con el
+            // progreso del vídeo/canción
+            sliderTiempo.setValue(0); // Iniciar el slider en 0 al principio
+            sliderTiempo.setBlockIncrement(1); // Incremento cuando se arrastra el slider
+            sliderTiempo.setMax(100); // Definir un rango máximo
 
-        // Inicializar el slider y asignarle un listener para que se actualice con el
-        // progreso del vídeo/canción
-        sliderTiempo.setValue(0); // Iniciar el slider en 0 al principio
-        sliderTiempo.setBlockIncrement(1); // Incremento cuando se arrastra el slider
-        sliderTiempo.setMax(100); // Definir un rango máximo, por ejemplo, el 100% de la duración del archivo
+            if (mediaView != null) {
+                pantalla.getChildren().add(mediaView); // Agregar mediaView al pane
+            } else {
+                throw new NullPointerException("El objeto mediaView no ha sido inicializado.");
+            }
 
-        if (mediaView != null) {
-            pantalla.getChildren().add(mediaView); // Agregar mediaView al pane
+            // Listeners para ajustar la vista multimedia al tamaño del contenedor
+            pantalla.widthProperty().addListener((obs, oldVal, newVal) -> {
+                try {
+                    mediaView.setFitWidth(newVal.doubleValue());
+                    imageViewAudio.setFitWidth(newVal.doubleValue());
+                } catch (NullPointerException e) {
+                    System.err.println("Error al ajustar el ancho: " + e.getMessage());
+                }
+            });
+
+            pantalla.heightProperty().addListener((obs, oldVal, newVal) -> {
+                try {
+                    mediaView.setFitHeight(newVal.doubleValue());
+                    imageViewAudio.setFitHeight(newVal.doubleValue());
+                } catch (NullPointerException e) {
+                    System.err.println("Error al ajustar la altura: " + e.getMessage());
+                }
+            });
+
+            // Asignación de eventos a los botones
+            if (btnSeleccionarCarpeta != null) {
+                btnSeleccionarCarpeta.setOnAction(e -> seleccionarCarpeta());
+            } else {
+                throw new NullPointerException("El botón btnSeleccionarCarpeta no ha sido inicializado.");
+            }
+
+            // Evento para manejar el doble clic sobre los archivos
+            if (listaArchivos != null) {
+                listaArchivos.setOnMouseClicked(event -> {
+                    try {
+                        reproducirArchivoSeleccionado(event);
+                    } catch (Exception e) {
+                        System.err.println("Error en el evento de listaArchivos: " + e.getMessage());
+                    }
+                });
+            } else {
+                throw new NullPointerException("El componente listaArchivos no ha sido inicializado.");
+            }
+        } catch (NullPointerException e) {
+            System.err.println("Error al configurar componentes: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error inesperado en configurarComponentes: " + e.getMessage());
         }
-
-        pantalla.widthProperty().addListener((obs, oldVal, newVal) -> {
-            mediaView.setFitWidth(newVal.doubleValue());
-            imageViewAudio.setFitWidth(newVal.doubleValue());
-        });
-
-        pantalla.heightProperty().addListener((obs, oldVal, newVal) -> {
-            mediaView.setFitHeight(newVal.doubleValue());
-            imageViewAudio.setFitHeight(newVal.doubleValue());
-        });
-
-        // Asignación de eventos a los botones
-        btnSeleccionarCarpeta.setOnAction(e -> seleccionarCarpeta());
-
-        // Evento para manejar el doble clic sobre los archivos
-        listaArchivos.setOnMouseClicked(event -> {
-            reproducirArchivoSeleccionado(event);
-        });
     }
 
+    /**
+     * Reproduce un archivo multimedia.
+     * 
+     * @param archivo Archivo multimedia a reproducir.
+     */
     private void reproducirArchivo(File archivo) {
-        String archivoRuta = archivo.toURI().toString();
-        Media media = new Media(archivoRuta);
+        try {
+            if (archivo == null) {
+                throw new NullPointerException("El archivo proporcionado es nulo.");
+            }
 
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
+            if (!archivo.exists()) {
+                throw new FileNotFoundException("El archivo no existe: " + archivo.getAbsolutePath());
+            }
 
-        mediaPlayer = new MediaPlayer(media);
-        mediaView.setMediaPlayer(mediaPlayer);
+            String archivoRuta = archivo.toURI().toString();
+            Media media;
+            media = new Media(archivoRuta);
 
-        // Actualizar el título
-        Platform.runLater(() -> {
-            tituloArchivo.setText(archivo.getName()); // Establecer el nombre del archivo como texto
-            HBox.setHgrow(tituloArchivo, Priority.ALWAYS);
-            tituloArchivo.setMaxWidth(Double.MAX_VALUE);
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+            }
 
-            tituloArchivo.setVisible(true); // Asegurarse de que el título sea visible
-        });
+            mediaPlayer = new MediaPlayer(media);
+            mediaView.setMediaPlayer(mediaPlayer);
 
-        mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-            // Actualiza el slider con el progreso de la reproducción
-            double porcentaje = (newValue.toSeconds() / mediaPlayer.getTotalDuration().toSeconds()) * 100;
-            sliderTiempo.setValue(porcentaje);
-        });
-
-        if (archivo.getName().endsWith(".mp4")) {
+            // Actualizar el título
             Platform.runLater(() -> {
-                mediaView.setPreserveRatio(true);
-                mediaView.setFitWidth(pantalla.getWidth());
-                mediaView.setFitHeight(pantalla.getHeight());
+                try {
+                    if (tituloArchivo != null) {
+                        tituloArchivo.setText(archivo.getName()); // Establecer el nombre del archivo como texto
+                        HBox.setHgrow(tituloArchivo, Priority.ALWAYS);
+                        tituloArchivo.setMaxWidth(Double.MAX_VALUE);
+                        tituloArchivo.setVisible(true); // Asegurar visibilidad del título
+                    } else {
+                        throw new NullPointerException("El componente tituloArchivo no está inicializado.");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error al actualizar el título del archivo: " + e.getMessage());
+                }
             });
-            mediaView.setVisible(true);
-            imageViewAudio.setVisible(false);
-        } else if (archivo.getName().endsWith(".mp3")) {
-            imageViewAudio.setImage(new Image(getClass().getResource("/img/corchea.png").toExternalForm()));
-            Platform.runLater(() -> {
-                imageViewAudio.setFitWidth(pantalla.getWidth());
-                imageViewAudio.setFitHeight(pantalla.getHeight());
-            });
-            imageViewAudio.setVisible(true);
-            mediaView.setVisible(false);
-        }
 
-        mediaPlayer.play();
+            mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+                try {
+                    if (mediaPlayer.getTotalDuration() != null && mediaPlayer.getTotalDuration().toSeconds() > 0) {
+                        double porcentaje = (newValue.toSeconds() / mediaPlayer.getTotalDuration().toSeconds()) * 100;
+                        sliderTiempo.setValue(porcentaje);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error al actualizar el progreso de la reproducción: " + e.getMessage());
+                }
+            });
+
+            if (archivo.getName().endsWith(".mp4")) {
+                Platform.runLater(() -> {
+                    try {
+                        mediaView.setPreserveRatio(true);
+                        mediaView.setFitWidth(pantalla.getWidth());
+                        mediaView.setFitHeight(pantalla.getHeight());
+                        mediaView.setVisible(true);
+                        imageViewAudio.setVisible(false);
+                    } catch (Exception e) {
+                        System.err.println("Error al ajustar el tamaño de mediaView: " + e.getMessage());
+                    }
+                });
+            } else if (archivo.getName().endsWith(".mp3")) {
+                try {
+                    if (imageViewAudio != null) {
+                        Image imagen = new Image(getClass().getResource("/img/corchea.png").toExternalForm());
+                        imageViewAudio.setImage(imagen);
+
+                        Platform.runLater(() -> {
+                            try {
+                                imageViewAudio.setFitWidth(pantalla.getWidth());
+                                imageViewAudio.setFitHeight(pantalla.getHeight());
+                            } catch (Exception e) {
+                                System.err.println("Error al ajustar el tamaño de imageViewAudio: " + e.getMessage());
+                            }
+                        });
+
+                        imageViewAudio.setVisible(true);
+                        mediaView.setVisible(false);
+                    } else {
+                        throw new NullPointerException("El componente imageViewAudio no está inicializado.");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error al configurar la imagen para archivos de audio: " + e.getMessage());
+                }
+            }
+
+            mediaPlayer.play();
+
+        } catch (FileNotFoundException | MediaException e) {
+            System.err.println("Error al reproducir archivo multimedia: " + e.getMessage());
+        } catch (NullPointerException e) {
+            System.err.println("Error de referencia a un objeto nulo: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error inesperado en reproducirArchivo: " + e.getMessage());
+        }
     }
 
+    /**
+     * Inicia la reproducción del archivo multimedia actual.
+     */
     @FXML
     private void play() {
         if (mediaPlayer != null) {
@@ -258,6 +443,9 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Pausa la reproducción del archivo multimedia actual.
+     */
     @FXML
     private void pause() {
         if (mediaPlayer != null) {
@@ -265,6 +453,9 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Detiene la reproducción del archivo multimedia actual.
+     */
     @FXML
     private void stop() {
         if (mediaPlayer != null) {
@@ -272,6 +463,12 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Cambia la posición de reproducción del mediaPlayer según el valor del slider
+     * de tiempo.
+     * Convierte el porcentaje del slider en segundos y ajusta la reproducción a ese
+     * tiempo.
+     */
     @FXML
     private void cambiarTiempo() {
         if (mediaPlayer != null) {
@@ -281,6 +478,10 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Ajusta la velocidad de reproducción del mediaPlayer a 0.5x (mitad de la
+     * velocidad normal).
+     */
     @FXML
     private void cambiarVelocidad05() {
         if (mediaPlayer != null) {
@@ -288,6 +489,10 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Restablece la velocidad de reproducción del mediaPlayer a 1x (velocidad
+     * normal).
+     */
     @FXML
     private void cambiarVelocidad1() {
         if (mediaPlayer != null) {
@@ -295,6 +500,9 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Aumenta la velocidad de reproducción del mediaPlayer a 1.5x.
+     */
     @FXML
     private void cambiarVelocidad15() {
         if (mediaPlayer != null) {
@@ -302,6 +510,10 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Aumenta la velocidad de reproducción del mediaPlayer a 2x (doble de la
+     * velocidad normal).
+     */
     @FXML
     private void cambiarVelocidad2() {
         if (mediaPlayer != null) {
@@ -309,6 +521,10 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Reduce el tamaño del mediaView al 30% del tamaño del contenedor pantalla.
+     * Ajusta tanto el ancho como el alto y centra la vista en el StackPane.
+     */
     @FXML
     private void cambiarTamaño03() {
         double porcentaje = 0.3;
@@ -321,6 +537,10 @@ public class BibliotecaController {
         StackPane.setAlignment(mediaView, Pos.CENTER);
     }
 
+    /**
+     * Reduce el tamaño del mediaView al 50% del tamaño del contenedor pantalla.
+     * Ajusta tanto el ancho como el alto y centra la vista en el StackPane.
+     */
     @FXML
     private void cambiarTamaño05() {
         double porcentaje = 0.5;
@@ -333,6 +553,10 @@ public class BibliotecaController {
         StackPane.setAlignment(mediaView, Pos.CENTER);
     }
 
+    /**
+     * Ajusta el tamaño del mediaView al 80% del tamaño del contenedor pantalla.
+     * Ajusta tanto el ancho como el alto y centra la vista en el StackPane.
+     */
     @FXML
     private void cambiarTamaño08() {
         double porcentaje = 0.8;
@@ -345,6 +569,10 @@ public class BibliotecaController {
         StackPane.setAlignment(mediaView, Pos.CENTER);
     }
 
+    /**
+     * Ajusta el tamaño del mediaView al 100% del tamaño del contenedor pantalla.
+     * Ajusta tanto el ancho como el alto y centra la vista en el StackPane.
+     */
     @FXML
     private void cambiarTamaño1() {
         double porcentaje = 1;
@@ -357,12 +585,22 @@ public class BibliotecaController {
         StackPane.setAlignment(mediaView, Pos.CENTER);
     }
 
+    /**
+     * Cierra la aplicación correctamente.
+     * Utiliza Platform.exit() para cerrar JavaFX y System.exit(0) para terminar la
+     * JVM.
+     */
     @FXML
     private void cerrarAplicacion() {
         Platform.exit();
         System.exit(0);
     }
 
+    /**
+     * Actualiza la biblioteca cargando nuevamente los archivos de la ruta
+     * seleccionada.
+     * Si no hay una ruta establecida, muestra una alerta informando al usuario.
+     */
     @FXML
     private void actualizarBiblioteca() {
         if (rutaDirectorio != null) {
@@ -372,6 +610,12 @@ public class BibliotecaController {
         }
     }
 
+    /**
+     * Muestra una alerta con un título y mensaje personalizado.
+     * 
+     * @param titulo  El título de la alerta.
+     * @param mensaje El contenido del mensaje a mostrar.
+     */
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.WARNING);
         alerta.setTitle(titulo);
@@ -380,6 +624,10 @@ public class BibliotecaController {
         alerta.showAndWait();
     }
 
+    /**
+     * Muestra una ventana con información acerca de la aplicación.
+     * Incluye el nombre del creador y la versión actual.
+     */
     @FXML
     private void mostrarAcercaDe() {
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);
@@ -390,6 +638,10 @@ public class BibliotecaController {
         alerta.showAndWait();
     }
 
+    /**
+     * Alterna la visibilidad del editor y la biblioteca.
+     * Si ambos están visibles, los oculta. Si alguno está oculto, los muestra.
+     */
     @FXML
     private void alternarEditorBiblioteca() {
         boolean editorVisible = pestañaEditor.isVisible();
