@@ -1,0 +1,7 @@
+.root {
+    -fx-background: linear-gradient(to bottom, #30203D, #8582B3);
+}
+
+.menubar{
+    -fx-background-color: #30203D;
+}
