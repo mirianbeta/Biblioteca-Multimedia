@@ -635,6 +635,11 @@ public class BibliotecaController {
         alerta.setHeaderText("Información del Programa");
         alerta.setContentText("Creador: Mirian\nVersión: 1.0.0");
 
+        Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
+
+        Image icono = new Image("/img/informacion.png");
+        stage.getIcons().add(icono);
+
         alerta.showAndWait();
     }
 
